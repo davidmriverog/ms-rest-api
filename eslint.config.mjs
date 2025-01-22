@@ -38,7 +38,10 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/require-await': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
-      '@typescript-eslint/ no-unsafe-function-type': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
+      '@typescript-eslint/no-base-to-string': 'off',
       'prettier/prettier': ["error",{"endOfLine": "auto"}]
     },
   },
