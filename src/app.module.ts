@@ -29,7 +29,7 @@ import { RestLoggerModule } from '@bomb/logger';
             min: 2,
             max: 12,
           },
-          acquireConnectionTimeout: 10000,
+          acquireConnectionTimeout: 3000,
           debug: true,
         },
         retryAttempts: 3,

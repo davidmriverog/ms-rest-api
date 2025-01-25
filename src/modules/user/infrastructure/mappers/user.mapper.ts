@@ -5,6 +5,12 @@ import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UserMapper {
+  rawToEntity(raw: any): UserEntity {
+    return plainToInstance(UserEntity, {
+      ...raw,
+    });
+  }
+
   mapEntityToBo(entity: UserEntity): UserBo {
     return plainToInstance(UserBo, {
       ...entity,
