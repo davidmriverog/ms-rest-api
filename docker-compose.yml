@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  ms-rest-api:
+    container_name: ms-rest-api
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:asd789@host.docker.internal:5433/tenants_db?sslmode=disable
+    networks:
+      - db
+
+networks:
+  db:
+    external:
+      name: db-net

@@ -43,6 +43,7 @@ export default tseslint.config(
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-useless-catch': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
       'prettier/prettier': ["error",{"endOfLine": "auto"}]
     },
   },

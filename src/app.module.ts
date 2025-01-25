@@ -26,11 +26,8 @@ import { RestLoggerModule } from '@bomb/logger';
             connectionString: configService.get('DATABASE_URL'),
           },
           pool: {
-            min: 0,
-            max: 30,
-            log: (msg) => {
-              Logger.log(msg, 'SQL_POOL');
-            },
+            min: 2,
+            max: 12,
           },
           acquireConnectionTimeout: 10000,
           debug: true,

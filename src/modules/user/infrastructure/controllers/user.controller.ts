@@ -1,13 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
-import { Knex } from 'knex';
-import { InjectConnection } from '@bomb/database';
+import { Controller, Get, HttpStatus, Inject, Res } from '@nestjs/common';
+import { AllUserUseCase } from '../../domain/use-cases/all-user.use-case';
+import { FastifyReply } from 'fastify';
 
 @Controller('users')
 export class UserController {
-  constructor(@InjectConnection() private readonly knex: Knex) {}
+  constructor(
+    @Inject(AllUserUseCase) private readonly allUserUseCase: AllUserUseCase,
+  ) {}
+
   @Get()
-  async allUsers() {
-    const users = await this.knex.table('users');
-    return { users };
+  async allUsers(@Res() res: FastifyReply) {
+    const result = await this.allUserUseCase.exec();
+
+    return res.type('application/json').code(HttpStatus.OK).send(result);
   }
 }

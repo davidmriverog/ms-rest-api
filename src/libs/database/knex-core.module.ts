@@ -1,12 +1,11 @@
 import {
-  Global,
-  Module,
   DynamicModule,
+  Global,
+  Inject,
+  Module,
+  OnApplicationShutdown,
   Provider,
   Type,
-  OnApplicationShutdown,
-  Inject,
-  Logger,
 } from '@nestjs/common';
 import {
   KnexModuleAsyncOptions,
@@ -16,6 +15,8 @@ import {
 import { getConnectionToken, handleRetry } from './common/knex.utils';
 import { KNEX_MODULE_OPTIONS } from './knex.constants';
 import { knex, Knex } from 'knex';
+import knexStringcase from 'knex-stringcase';
+
 import { ModuleRef } from '@nestjs/core';
 import { defer, lastValueFrom } from 'rxjs';
 import { RestLogger } from '../logger';
@@ -121,6 +122,7 @@ export class KnexCoreModule implements OnApplicationShutdown {
             },
             enableColors: true,
           },
+          ...knexStringcase(),
         });
       }).pipe(handleRetry(options.retryAttempts, options.retryDelay)),
     );
