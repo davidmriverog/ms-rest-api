@@ -40,4 +40,30 @@ export class UserRepositoryImpl implements UserRepository {
       connection.release();
     }
   }
+
+  async findById(id: number): Promise<UserEntity> {
+    const pool = new Pool({
+      connectionString: this.configService.get('DATABASE_URL'),
+    });
+
+    const connection = await pool.connect();
+
+    try {
+      const queryRunner = await this.knex
+        .select('*')
+        .from('users')
+        .where('id', id)
+        .first()
+        .connection(connection);
+
+      if (!queryRunner) throw new Error('No record found');
+
+      return this.userMapper.rawToEntity(queryRunner);
+    } catch (e) {
+      this.logger.log(e.message);
+      throw e;
+    } finally {
+      connection.release();
+    }
+  }
 }

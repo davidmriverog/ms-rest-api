@@ -1,3 +1,4 @@
+import { RestLogger } from '@bomb/logger';
 import { Inject, Injectable } from '@nestjs/common';
 
 import { UserPort } from '../../domain/ports/user.port';
@@ -11,6 +12,7 @@ export class UserAdapter implements UserPort {
     @Inject(UserRepository)
     private readonly userRepository: UserRepository,
     private readonly userMapper: UserMapper,
+    private readonly logger: RestLogger,
   ) {}
 
   async all(): Promise<UserBo[]> {
@@ -19,7 +21,21 @@ export class UserAdapter implements UserPort {
 
       return result.map((item) => this.userMapper.mapEntityToBo(item));
     } catch (e) {
-      console.log(e);
+      this.logger.log(`UserAdapter returned error: ${e.message}`);
+
+      throw e;
+    }
+  }
+
+  async findById(id: number): Promise<UserBo> {
+    try {
+      const result = await this.userRepository.findById(id);
+
+      return this.userMapper.mapEntityToBo(result);
+    } catch (e) {
+      this.logger.log(`UserAdapter returned error: ${e.message}`);
+
+      throw e;
     }
   }
 }
