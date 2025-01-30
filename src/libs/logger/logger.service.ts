@@ -1,6 +1,7 @@
 import { ConsoleLogger, Injectable } from '@nestjs/common';
 
 import { createLogger, transports, format } from 'winston';
+import LokiTransport from 'winston-loki';
 
 @Injectable()
 export class RestLogger extends ConsoleLogger {
@@ -8,47 +9,40 @@ export class RestLogger extends ConsoleLogger {
 
   public lokiLogger;
 
-  public asyncOptions: any = {
-    transports: [
-      new transports.Console({
-        format: format.combine(
-          format.colorize({ all: true }),
-          format.cli(),
-          format.splat(),
-          format.timestamp({
-            format: 'DD/MM/YYYY HH:mm:ss',
-          }),
-          format.printf((info) => {
-            return `[${info.timestamp}] - ${info.level}: ${info.message}`;
-          }),
-        ),
-      }),
-    ],
-  };
-
   constructor() {
     super();
 
     this.lokiLogger = createLogger({
-      level: 'info',
-      format: format.combine(
-        format.colorize({ all: true }),
-        format.timestamp({
-          format: 'DD-MM-YYYY HH:mm:ss.SSS',
+      transports: [
+        new LokiTransport({
+          host: process.env.LOKI_URL,
         }),
-        // format.align(),
-        format.printf(
-          (info) => `[${info.timestamp}] ${info.level}: ${info.message}`,
-        ),
-      ),
-      transports: [new transports.Console()],
+        new transports.Console({
+          format: format.combine(
+            format.colorize({ all: true }),
+            format.timestamp({
+              format: 'DD-MM-YYYY HH:mm:ss.SSS',
+            }),
+            // format.align(),
+            format.printf(
+              (info) => `[${info.timestamp}] ${info.level}: ${info.message}`,
+            ),
+          ),
+        }),
+      ],
     });
   }
 
   override log(message): void {
     const contextMsg = `[${this.getTracker()}] - ${message}`;
 
-    this.lokiLogger.info(contextMsg);
+    this.lokiLogger.info({
+      message: contextMsg,
+      level: 'info',
+      labels: {
+        job: 'applications',
+      },
+    });
   }
 
   getTracker() {

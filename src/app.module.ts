@@ -27,7 +27,9 @@ import { RestLoggerModule } from '@bomb/logger';
           },
           pool: {
             min: 2,
-            max: 12,
+            max: 20,
+            acquireTimeoutMillis: 2000,
+            idleTimeoutMillis: 2000,
           },
           acquireConnectionTimeout: 3000,
           debug: true,
