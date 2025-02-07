@@ -17,9 +17,9 @@ export class UserRepositoryImpl implements UserRepository {
 
   async all(): Promise<UserEntity[]> {
     try {
-      const queryRunner = await this.knex.select('*').from('users');
+      const findList: any[] = await this.knex.select('*').from('users');
 
-      return queryRunner.map((it) => this.userMapper.rawToEntity(it));
+      return findList.map((it) => this.userMapper.rawToEntity(it));
     } catch (e) {
       this.logger.log(e.message);
       throw e;
@@ -28,15 +28,15 @@ export class UserRepositoryImpl implements UserRepository {
 
   async findById(id: number): Promise<UserEntity> {
     try {
-      const queryRunner = await this.knex
+      const findFirst: any = await this.knex
         .select('*')
         .from('users')
         .where('id', id)
         .first();
 
-      if (!queryRunner) throw new Error('No record found');
+      if (!findFirst) throw new Error('No record found');
 
-      return this.userMapper.rawToEntity(queryRunner);
+      return this.userMapper.rawToEntity(findFirst);
     } catch (e) {
       this.logger.log(e.message);
       throw e;
