@@ -1,4 +1,5 @@
-import { IRepository } from '@bomb/persistence';
+import { IRepository } from '@bomb/core/infrastructure/persistence';
+
 import { UserEntity } from '../entities/user.entity';
 
 export interface UserRepository extends IRepository<UserEntity> {
