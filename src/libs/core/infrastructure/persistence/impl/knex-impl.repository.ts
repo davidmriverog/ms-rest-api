@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 import { RestLogger } from '@bomb/logger';
 import { IRawToEntityMapper } from '@bomb/core/infrastructure';
 
-import { IRepository } from '../../../infrastructure/persistence';
+import { IRepository, TRowSelect } from '../../../infrastructure/persistence';
 import { BaseEntity } from '../../../infrastructure/persistence/entities/base.entity';
 
 export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
@@ -20,7 +20,7 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
 
   async all(): Promise<I[]> {
     try {
-      const findList: any[] = await this._dataSource.select('*').from(this._baseEntity.getTableName());
+      const findList: TRowSelect[] = await this._dataSource.select('*').from(this._baseEntity.getTableName());
 
       return findList.map((it) => this._mapper.map(it));
     } catch (e) {
@@ -31,7 +31,7 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
 
   async findById(id: number): Promise<I> {
     try {
-      const findFirst: any = await this._dataSource
+      const findFirst: TRowSelect = await this._dataSource
         .select('*')
         .from(this._baseEntity.getTableName())
         .where('id', id)

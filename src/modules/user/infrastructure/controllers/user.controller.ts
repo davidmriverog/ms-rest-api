@@ -8,13 +8,13 @@ import {
 } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
 
-import { AllUserUseCase } from '../../domain/use-cases/all-user.use-case';
+import { UserAllUseCase } from '../../domain/use-cases/user-all.use-case';
 import { UserFindByIdUseCase } from '../../domain/use-cases/user-find-by-id.use-case';
 
 @Controller('users')
 export class UserController {
   constructor(
-    @Inject(AllUserUseCase) private readonly allUserUseCase: AllUserUseCase,
+    @Inject(UserAllUseCase) private readonly allUserUseCase: UserAllUseCase,
     @Inject(UserFindByIdUseCase)
     private readonly userFindByIdUseCase: UserFindByIdUseCase,
   ) {}

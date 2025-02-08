@@ -13,10 +13,10 @@ export class UserAdapter extends BaseAdapter<UserBo, UserEntity> implements User
   constructor(
     @Inject(UserRepository)
     private readonly userRepository: UserRepository,
-    private readonly userEntityToBoMapper: UserEntityToBoMapper,
+    private readonly mapper: UserEntityToBoMapper,
     private readonly logger: RestLogger,
   ) {
-    super(userRepository, userEntityToBoMapper, logger)
+    super(userRepository, mapper, logger)
   }
 
   // Override method implements.

@@ -1,3 +1,3 @@
-export interface IBoToEntityMapper<E, B> {
-  map<E>(bo: B): E;
+export interface IBoToEntityMapper<B, R> {
+  map(bo: B): R;
 }
