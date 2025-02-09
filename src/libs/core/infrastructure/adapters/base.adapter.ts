@@ -10,7 +10,7 @@ export abstract class BaseAdapter<I, E> implements IBasePort<I> {
 
   private readonly _logger: RestLogger;
 
-  constructor(repository: IRepository<E>, mapEntityToBo: IEntityToBoMapper<E, I>, logger: RestLogger) {
+  protected constructor(repository: IRepository<E>, mapEntityToBo: IEntityToBoMapper<E, I>, logger: RestLogger) {
     this._repository = repository;
     this._mapEntityToBo = mapEntityToBo;
     this._logger = logger;
@@ -22,8 +22,6 @@ export abstract class BaseAdapter<I, E> implements IBasePort<I> {
 
       return result.map((item) => this._mapEntityToBo.map(item));
     } catch (e) {
-      this._logger.log(`returned error: ${e.message}`);
-
       throw e;
     }
   }
@@ -34,8 +32,6 @@ export abstract class BaseAdapter<I, E> implements IBasePort<I> {
 
       return this._mapEntityToBo.map(result);
     } catch (e) {
-      this._logger.log(`returned error: ${e.message}`);
-
       throw e;
     }
   }

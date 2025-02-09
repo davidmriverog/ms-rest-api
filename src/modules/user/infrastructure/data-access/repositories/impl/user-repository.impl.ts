@@ -3,10 +3,11 @@ import { InjectConnection } from '@bomb/database';
 import { Knex } from 'knex';
 import { RestLogger } from '@bomb/logger';
 
-import { UserEntity } from '../../entities/user.entity';
-import { UserRepository } from '../user.repository';
 import { KnexRepositoryImpl } from '@bomb/core/infrastructure/persistence';
-import { UserRawToEntityMapper } from '../../../mappers/user-raw-to-entity.mapper';
+import { UserError } from '@modules/user/domain/errors/user.error';
+import { UserEntity } from '@modules/user/infrastructure/data-access/entities/user.entity';
+import { UserRawToEntityMapper } from '@modules/user/infrastructure/mappers/user-raw-to-entity.mapper';
+import { UserRepository } from '@modules/user/infrastructure/data-access/repositories/user.repository';
 
 @Injectable()
 export class UserRepositoryImpl extends KnexRepositoryImpl<UserEntity> implements UserRepository {
@@ -15,6 +16,6 @@ export class UserRepositoryImpl extends KnexRepositoryImpl<UserEntity> implement
     private readonly mapper: UserRawToEntityMapper,
     private readonly logger: RestLogger,
   ) {
-    super(knex, mapper, logger, UserEntity)
+    super(knex, mapper, logger, UserEntity, UserError)
   }
 }

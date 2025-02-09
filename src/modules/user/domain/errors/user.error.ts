@@ -1,7 +1,7 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { BaseError } from '@bomb/core/domain';
 
-export class UserError extends HttpException {
-  constructor(message) {
-    super(message, HttpStatus.NOT_FOUND);
+export class UserError extends BaseError {
+  constructor(message: string) {
+    super(message);
   }
 }

@@ -1,21 +1,23 @@
 import { Knex } from 'knex';
 import { RestLogger } from '@bomb/logger';
 import { IRawToEntityMapper } from '@bomb/core/infrastructure';
+import { BaseError } from '@bomb/core/domain';
+import { BaseEntity, IRepository, TRowSelect } from '@bomb/core/infrastructure/persistence';
 
-import { IRepository, TRowSelect } from '../../../infrastructure/persistence';
-import { BaseEntity } from '../../../infrastructure/persistence/entities/base.entity';
 
 export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
   _dataSource: Knex;
   _baseEntity: typeof BaseEntity;
+  _baseError: typeof BaseError;
   _mapper: IRawToEntityMapper<I>;
   _logger: RestLogger;
 
-  constructor(dataSource: Knex, mapper: IRawToEntityMapper<I>, logger: RestLogger, baseEntity: typeof BaseEntity) {
+  protected constructor(dataSource: Knex, mapper: IRawToEntityMapper<I>, logger: RestLogger, baseEntity: typeof BaseEntity, baseError: typeof BaseError) {
     this._dataSource = dataSource;
     this._mapper = mapper;
     this._logger = logger;
     this._baseEntity = baseEntity;
+    this._baseError = baseError;
   }
 
   async all(): Promise<I[]> {
@@ -24,8 +26,8 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
 
       return findList.map((it) => this._mapper.map(it));
     } catch (e) {
-      this._logger.log(e.message);
-      throw e;
+      this._logger.log(JSON.stringify(e));
+      throw new this._baseError(`${this._baseEntity.getTableName()}.all.query_errors`);
     }
   }
 
@@ -37,11 +39,11 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
         .where('id', id)
         .first();
 
-      if (!findFirst) throw new Error('No record found');
+      if (!findFirst) throw new this._baseError(`${this._baseEntity.getTableName()}.findById.not_record`)
 
       return this._mapper.map(findFirst);
     } catch (e) {
-      this._logger.log(e.message);
+      this._logger.log(JSON.stringify(e));
       throw e;
     }
   }
