@@ -5,33 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "npm run start:debug",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
             "type": "node",
             "request": "launch",
-            "cwd": "${workspaceRoot}",
+            "name": "Debug Nest Framework",
             "runtimeExecutable": "npm",
             "runtimeArgs": [
                 "run",
-                "start:debug"
+                "start:debug",
+                "--",
+                "--inspect-brk"
             ],
-            "env": {
-                "PORT": "5000" // env var used in app        
-            }
-        },
-        {
-            "name": "Debug Jest Tests",
-            "type": "node",
-            "request": "launch",
-            "runtimeArgs": [
-              "--inspect-brk",
-              "${workspaceRoot}/node_modules/jest/bin/jest.js",
-              "--runInBand"
-            ],
+            "autoAttachChildProcesses": true,
+            "restart": true,
+            "sourceMaps": true,
+            "stopOnEntry": false,
             "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen"
-          }
+        }
     ]
 }

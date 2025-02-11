@@ -12,7 +12,13 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
   _mapper: IRawToEntityMapper<I>;
   _logger: RestLogger;
 
-  protected constructor(dataSource: Knex, mapper: IRawToEntityMapper<I>, logger: RestLogger, baseEntity: typeof BaseEntity, baseError: typeof BaseError) {
+  protected constructor(
+    dataSource: Knex,
+    mapper: IRawToEntityMapper<I>,
+    logger: RestLogger,
+    baseEntity: typeof BaseEntity,
+    baseError: typeof BaseError,
+  ) {
     this._dataSource = dataSource;
     this._mapper = mapper;
     this._logger = logger;
@@ -22,12 +28,16 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
 
   async all(): Promise<I[]> {
     try {
-      const findList: TRowSelect[] = await this._dataSource.select('*').from(this._baseEntity.getTableName());
+      const findList: TRowSelect[] = await this._dataSource
+        .select('*')
+        .from(this._baseEntity.getTableName());
 
       return findList.map((it) => this._mapper.map(it));
     } catch (e) {
       this._logger.log(JSON.stringify(e));
-      throw new this._baseError(`${this._baseEntity.getTableName()}.all.query_errors`);
+      throw new this._baseError(
+        `${this._baseEntity.getTableName()}.all.query_errors`,
+      );
     }
   }
 
@@ -39,12 +49,40 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
         .where('id', id)
         .first();
 
-      if (!findFirst) throw new this._baseError(`${this._baseEntity.getTableName()}.findById.not_record`)
+      if (!findFirst)
+        throw new this._baseError(
+          `${this._baseEntity.getTableName()}.findById.not_record`,
+        );
 
       return this._mapper.map(findFirst);
     } catch (e) {
       this._logger.log(JSON.stringify(e));
       throw e;
+    }
+  }
+
+  async create(attrs: I, transaction?: Knex.Transaction): Promise<I> {
+    const trx = transaction ?? await this._dataSource.transaction();
+
+    try {
+      const result = await this._dataSource(this._baseEntity.getTableName())
+        .transacting(trx)
+        .insert(attrs)
+        .returning('*');
+
+      if (!transaction)
+        await trx.commit();
+
+      return this._mapper.map(result[0]);
+    } catch (e) {
+      if (!transaction)
+        await trx.rollback();
+
+      this._logger.log(JSON.stringify(e));
+
+      throw new this._baseError(
+        `${this._baseEntity.getTableName()}.create.sql_errors`,
+      );
     }
   }
 }

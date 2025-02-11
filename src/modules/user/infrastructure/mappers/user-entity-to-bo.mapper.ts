@@ -14,4 +14,10 @@ export class UserEntityToBoMapper
       ...entity,
     });
   }
+
+  mapBoToEntity(bo: UserBo): UserEntity {
+    return plainToInstance(UserEntity, {
+      ...bo,
+    });
+  }
 }

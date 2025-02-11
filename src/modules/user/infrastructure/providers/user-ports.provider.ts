@@ -1,6 +1,7 @@
 import { Provider } from '@nestjs/common';
-import { UserAdapter } from '../adapters/user.adapter';
-import { UserPort } from '../../domain/ports/user.port';
+
+import { UserPort } from '@modules/user/domain/ports/user.port';
+import { UserAdapter } from '@modules/user/infrastructure/adapters/user.adapter';
 
 export const USER_PORTS: Provider[] = [
   {

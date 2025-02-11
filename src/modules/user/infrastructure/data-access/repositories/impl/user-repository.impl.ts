@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@bomb/database';
 import { Knex } from 'knex';
 import { RestLogger } from '@bomb/logger';
-
 import { KnexRepositoryImpl } from '@bomb/core/infrastructure/persistence';
+
 import { UserError } from '@modules/user/domain/errors/user.error';
 import { UserEntity } from '@modules/user/infrastructure/data-access/entities/user.entity';
 import { UserRawToEntityMapper } from '@modules/user/infrastructure/mappers/user-raw-to-entity.mapper';

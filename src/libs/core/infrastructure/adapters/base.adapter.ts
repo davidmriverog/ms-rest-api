@@ -10,7 +10,11 @@ export abstract class BaseAdapter<I, E> implements IBasePort<I> {
 
   private readonly _logger: RestLogger;
 
-  protected constructor(repository: IRepository<E>, mapEntityToBo: IEntityToBoMapper<E, I>, logger: RestLogger) {
+  constructor(
+    repository: IRepository<E>,
+    mapEntityToBo: IEntityToBoMapper<E, I>,
+    logger: RestLogger,
+  ) {
     this._repository = repository;
     this._mapEntityToBo = mapEntityToBo;
     this._logger = logger;
@@ -28,7 +32,19 @@ export abstract class BaseAdapter<I, E> implements IBasePort<I> {
 
   async findById(id: number): Promise<I> {
     try {
-      const result = await this._repository.findById(id);
+      const result: E = await this._repository.findById(id);
+
+      return this._mapEntityToBo.map(result);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async create(bo: I): Promise<I> {
+    try {
+      const entity: E = this._mapEntityToBo.mapBoToEntity(bo);
+
+      const result: E = await this._repository.create(entity);
 
       return this._mapEntityToBo.map(result);
     } catch (e) {

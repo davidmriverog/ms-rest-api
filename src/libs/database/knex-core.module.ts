@@ -108,7 +108,7 @@ export class KnexCoreModule implements OnApplicationShutdown {
     logger: RestLogger,
   ): Promise<Knex> {
     const debugCallback = (msg) => {
-      logger.log(msg.sql);
+      logger.log(`${msg.sql} - ATTRS${JSON.stringify(msg.bindings)}`);
     };
 
     return lastValueFrom(
