@@ -51,4 +51,16 @@ export abstract class BaseAdapter<I, E> implements IBasePort<I> {
       throw e;
     }
   }
+
+  async update(id: number, bo: I): Promise<I> {
+    try {
+      const entity: E = this._mapEntityToBo.mapBoToEntity(bo);
+
+      const result: E = await this._repository.update(id, entity)
+
+      return this._mapEntityToBo.map(result);
+    } catch (e) {
+      throw e;
+    }
+  }
 }

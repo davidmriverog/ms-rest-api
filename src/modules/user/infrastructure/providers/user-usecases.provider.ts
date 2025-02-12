@@ -6,6 +6,8 @@ import { UserFindByIdUseCase } from '@modules/user/domain/use-cases/user-find-by
 import { UserFindByIdUseCaseImpl } from '@modules/user/application/user-find-by-id-impl.use-case';
 import { UserCreateUseCase } from '@modules/user/domain/use-cases/user-create.use-case';
 import { UserCreateUseCaseImpl } from '@modules/user/application/user-create-impl.use-case';
+import { UserUpdateUseCaseImpl } from '@modules/user/application/user-update-impl.use-case';
+import { UserUpdateUseCase } from '@modules/user/domain/use-cases/user-update.use-case';
 
 export const USER_USE_CASES_PROVIDERS: Provider[] = [
   {
@@ -19,5 +21,9 @@ export const USER_USE_CASES_PROVIDERS: Provider[] = [
   {
     provide: UserCreateUseCase,
     useClass: UserCreateUseCaseImpl,
+  },
+  {
+    provide: UserUpdateUseCase,
+    useClass: UserUpdateUseCaseImpl,
   },
 ];

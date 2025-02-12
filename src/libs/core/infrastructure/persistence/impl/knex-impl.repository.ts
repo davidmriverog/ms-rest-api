@@ -62,7 +62,7 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
   }
 
   async create(attrs: I, transaction?: Knex.Transaction): Promise<I> {
-    const trx = transaction ?? await this._dataSource.transaction();
+    const trx = transaction ?? (await this._dataSource.transaction());
 
     try {
       const result = await this._dataSource(this._baseEntity.getTableName())
@@ -70,13 +70,35 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
         .insert(attrs)
         .returning('*');
 
-      if (!transaction)
-        await trx.commit();
+      if (!transaction) await trx.commit();
 
       return this._mapper.map(result[0]);
     } catch (e) {
-      if (!transaction)
-        await trx.rollback();
+      if (!transaction) await trx.rollback();
+
+      this._logger.log(JSON.stringify(e));
+
+      throw new this._baseError(
+        `${this._baseEntity.getTableName()}.create.sql_errors`,
+      );
+    }
+  }
+
+  async update(id: number, attrs: I, transaction?: Knex.Transaction): Promise<I> {
+    const trx = transaction ?? (await this._dataSource.transaction());
+
+    try {
+      const result = await this._dataSource(this._baseEntity.getTableName())
+        .transacting(trx)
+        .where(this._baseEntity.getIdentity(), id)
+        .update(attrs)
+        .returning('*');
+
+      if (!transaction) await trx.commit();
+
+      return this._mapper.map(result[0]);
+    } catch (e) {
+      if (!transaction) await trx.rollback();
 
       this._logger.log(JSON.stringify(e));
 
