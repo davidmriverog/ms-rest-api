@@ -113,10 +113,14 @@ export class KnexCoreModule implements OnApplicationShutdown {
           ...options.config,
           log: {
             error: (msg) => {
-              logger.error(msg.sql);
+              logger.log(msg.sql);
+            },
+            debug: (msg) => {
+              logger.log(`SQL ${msg.sql} - ${JSON.stringify(msg.bindings)}`);
             },
             enableColors: true,
           },
+          debug: true,
           ...knexStringcase(),
         })
       }).pipe(handleRetry(options.retryAttempts, options.retryDelay)),
