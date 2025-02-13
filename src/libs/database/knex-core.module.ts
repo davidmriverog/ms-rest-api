@@ -109,7 +109,7 @@ export class KnexCoreModule implements OnApplicationShutdown {
   ): Promise<Knex> {
     return lastValueFrom(
       defer(async () => {
-        const dataSource = knex({
+        return knex({
           ...options.config,
           log: {
             error: (msg) => {
@@ -119,19 +119,6 @@ export class KnexCoreModule implements OnApplicationShutdown {
           },
           ...knexStringcase(),
         })
-
-        dataSource.on('query', (querySpec) => {
-          if (querySpec.bindings)
-            logger.log(`
-              SQL: ${querySpec.sql} - bindings${JSON.stringify(querySpec.bindings)}
-            `)
-          else
-            logger.log(`
-              SQL: ${querySpec.sql}
-            `)
-        })
-
-        return dataSource;
       }).pipe(handleRetry(options.retryAttempts, options.retryDelay)),
     );
   }

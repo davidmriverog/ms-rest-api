@@ -34,7 +34,7 @@ export class RestLogger extends ConsoleLogger {
   }
 
   override log(message): void {
-    const contextMsg = `[${this.getTracker()}] - ${message}`;
+    const contextMsg = `[${this.getTracker()}] ${message}`;
 
     this.lokiLogger.info({
       message: contextMsg,

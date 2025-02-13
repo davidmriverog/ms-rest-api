@@ -1,22 +1,22 @@
 import { RestLogger } from '@bomb/logger';
 import { IBasePort } from '../../domain/ports/base.port';
-import { IEntityToBoMapper } from '../mappers/entity-to-bo.mapper';
 import { IRepository } from '../../infrastructure/persistence';
+import { IGenericMapper } from '@bomb/core/infrastructure';
 
 export abstract class BaseAdapter<I, E> implements IBasePort<I> {
   private readonly _repository: IRepository<E>;
 
-  private readonly _mapEntityToBo: IEntityToBoMapper<E, I>;
+  private readonly _mapper: IGenericMapper<any,I, E, any>;
 
   private readonly _logger: RestLogger;
 
   constructor(
     repository: IRepository<E>,
-    mapEntityToBo: IEntityToBoMapper<E, I>,
+    mapper: IGenericMapper<any,I, E, any>,
     logger: RestLogger,
   ) {
     this._repository = repository;
-    this._mapEntityToBo = mapEntityToBo;
+    this._mapper = mapper;
     this._logger = logger;
   }
 
@@ -24,7 +24,7 @@ export abstract class BaseAdapter<I, E> implements IBasePort<I> {
     try {
       const result: E[] = await this._repository.all();
 
-      return result.map((item) => this._mapEntityToBo.map(item));
+      return result.map((item) => this._mapper.entityToBo(item));
     } catch (e) {
       throw e;
     }
@@ -34,7 +34,7 @@ export abstract class BaseAdapter<I, E> implements IBasePort<I> {
     try {
       const result: E = await this._repository.findById(id);
 
-      return this._mapEntityToBo.map(result);
+      return this._mapper.entityToBo(result);
     } catch (e) {
       throw e;
     }
@@ -42,11 +42,11 @@ export abstract class BaseAdapter<I, E> implements IBasePort<I> {
 
   async create(bo: I): Promise<I> {
     try {
-      const entity: E = this._mapEntityToBo.mapBoToEntity(bo);
+      const entity: E = this._mapper.boToEntity(bo);
 
       const result: E = await this._repository.create(entity);
 
-      return this._mapEntityToBo.map(result);
+      return this._mapper.entityToBo(result);
     } catch (e) {
       throw e;
     }
@@ -54,11 +54,11 @@ export abstract class BaseAdapter<I, E> implements IBasePort<I> {
 
   async update(id: number, bo: I): Promise<I> {
     try {
-      const entity: E = this._mapEntityToBo.mapBoToEntity(bo);
+      const entity: E = this._mapper.boToEntity(bo);
 
       const result: E = await this._repository.update(id, entity)
 
-      return this._mapEntityToBo.map(result);
+      return this._mapper.entityToBo(result);
     } catch (e) {
       throw e;
     }
