@@ -32,7 +32,6 @@ import { RestLoggerModule } from '@bomb/logger';
             idleTimeoutMillis: 2000,
           },
           acquireConnectionTimeout: 3000,
-          debug: true,
         },
         retryAttempts: 3,
         retryDelay: 2000,

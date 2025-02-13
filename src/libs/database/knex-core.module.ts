@@ -107,23 +107,31 @@ export class KnexCoreModule implements OnApplicationShutdown {
     options: KnexModuleOptions,
     logger: RestLogger,
   ): Promise<Knex> {
-    const debugCallback = (msg) => {
-      logger.log(`${msg.sql} - ATTRS${JSON.stringify(msg.bindings)}`);
-    };
-
     return lastValueFrom(
       defer(async () => {
-        return knex({
+        const dataSource = knex({
           ...options.config,
           log: {
-            debug: debugCallback,
             error: (msg) => {
               logger.error(msg.sql);
             },
             enableColors: true,
           },
           ...knexStringcase(),
-        });
+        })
+
+        dataSource.on('query', (querySpec) => {
+          if (querySpec.bindings)
+            logger.log(`
+              SQL: ${querySpec.sql} - bindings${JSON.stringify(querySpec.bindings)}
+            `)
+          else
+            logger.log(`
+              SQL: ${querySpec.sql}
+            `)
+        })
+
+        return dataSource;
       }).pipe(handleRetry(options.retryAttempts, options.retryDelay)),
     );
   }
