@@ -25,7 +25,7 @@ export class RestLogger extends ConsoleLogger {
             }),
             // format.align(),
             format.printf(
-              (info) => `[${info.timestamp}] ${info.level}: ${info.message}`,
+              (info) => `${info.timestamp}${info.message}`,
             ),
           ),
         }),

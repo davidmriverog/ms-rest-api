@@ -30,7 +30,6 @@ export class RequestLoggerInterceptor implements NestInterceptor {
         ip,
         method,
         url,
-        tracker,
         context,
         next,
         method != 'GET' ? body : query,
@@ -39,7 +38,14 @@ export class RequestLoggerInterceptor implements NestInterceptor {
     return next.handle();
   }
 
-  execute(ip, method, url, tracker, context, next, body): Observable<any> {
+  execute(
+    ip: string,
+    method: string,
+    url: string,
+    context: ExecutionContext,
+    next: CallHandler<any>,
+    body: any,
+  ): Observable<any> {
     this.logger.log(
       `Start Request - IP=[${ip}] METHOD=[${method}] PATH=[${url}] ${method != 'GET' ? 'DATA' : 'PARAMS'}=[${JSON.stringify(body)}]`,
     );

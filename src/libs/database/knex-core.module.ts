@@ -38,7 +38,7 @@ export class KnexCoreModule implements OnApplicationShutdown {
     const connectionProvider: Provider = {
       provide: getConnectionToken(connection),
       useFactory: async (options: KnexModuleOptions, logger: RestLogger) => {
-        return await this.createConnectionFactory(options, logger);
+        return this.createConnectionFactory(options, logger);
       },
       inject: [KNEX_MODULE_OPTIONS, RestLogger],
     };
@@ -116,12 +116,20 @@ export class KnexCoreModule implements OnApplicationShutdown {
               logger.log(msg.sql);
             },
             debug: (msg) => {
-              logger.log(`SQL ${msg.sql} - ${JSON.stringify(msg.bindings)}`);
+              // logger.log(`SQL ${msg.sql} - ${JSON.stringify(msg.bindings)}`);
             },
             enableColors: true,
           },
           debug: true,
           ...knexStringcase(),
+        }).on('query', async (query) => {
+          let msg = `SQL: ${query.sql}`;
+
+          if (query.bindings!==undefined) {
+            msg += ` ${JSON.stringify(query.bindings)}`;
+          }
+
+          logger.log(msg);
         })
       }).pipe(handleRetry(options.retryAttempts, options.retryDelay)),
     );
