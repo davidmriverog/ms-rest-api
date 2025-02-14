@@ -90,10 +90,12 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
     try {
       const table = this._baseEntity.getTableName();
 
+      const updateColumn = this._baseEntity.getUpdateAtColumn()
+
       const result = await this._dataSource(table)
         .transacting(trx)
         .where(this._baseEntity.getIdentity(), id)
-        .update(attrs)
+        .update(updateColumn ? {...attrs, [updateColumn]: new Date()} : attrs)
         .returning('*');
 
       if (!transaction) await trx.commit();
@@ -105,7 +107,7 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
       if (!transaction) await trx.rollback();
 
       throw new this._baseError(
-        `${this._baseEntity.getTableName()}.create.sql_errors`,
+        `${this._baseEntity.getTableName()}.update.sql_errors`,
       );
     }
   }
