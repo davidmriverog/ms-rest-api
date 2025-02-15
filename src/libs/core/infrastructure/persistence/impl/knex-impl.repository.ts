@@ -64,8 +64,14 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
     const trx = transaction ?? (await this._dataSource.transaction());
 
     try {
+      const createColumn = this._baseEntity.getCreatedAtColumn();
+
       const result = await this._dataSource
-        .insert(attrs)
+        .insert(
+          createColumn
+            ? { ...attrs, [createColumn]: this._dataSource.fn.now() }
+            : attrs,
+        )
         .into(this._baseEntity.getTableName())
         .transacting(trx)
         .returning('*');
@@ -84,18 +90,26 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
     }
   }
 
-  async update(id: number, attrs: I, transaction?: Knex.Transaction): Promise<I> {
+  async update(
+    id: number,
+    attrs: I,
+    transaction?: Knex.Transaction,
+  ): Promise<I> {
     const trx = transaction ?? (await this._dataSource.transaction());
 
     try {
       const table = this._baseEntity.getTableName();
 
-      const updateColumn = this._baseEntity.getUpdateAtColumn()
+      const updateColumn = this._baseEntity.getUpdateAtColumn();
 
       const result = await this._dataSource(table)
         .transacting(trx)
         .where(this._baseEntity.getIdentity(), id)
-        .update(updateColumn ? {...attrs, [updateColumn]: new Date()} : attrs)
+        .update(
+          updateColumn
+            ? { ...attrs, [updateColumn]: this._dataSource.fn.now() }
+            : attrs,
+        )
         .returning('*');
 
       if (!transaction) await trx.commit();
@@ -108,6 +122,34 @@ export abstract class KnexRepositoryImpl<I> implements IRepository<I> {
 
       throw new this._baseError(
         `${this._baseEntity.getTableName()}.update.sql_errors`,
+      );
+    }
+  }
+
+  async remove(id: number, transaction?: Knex.Transaction): Promise<boolean> {
+    const trx = transaction ?? (await this._dataSource.transaction());
+
+    try {
+      const table = this._baseEntity.getTableName();
+
+      const removeColumn = this._baseEntity.getRemoveAtColumn();
+
+      const result = await this._dataSource(table)
+        .transacting(trx)
+        .where(this._baseEntity.getIdentity(), id)
+        .update({ [removeColumn]: this._dataSource.fn.now() })
+        .returning('*');
+
+      if (!transaction) await trx.commit();
+
+      return true;
+    } catch (e) {
+      this._logger.log(e.message);
+
+      if (!transaction) await trx.rollback();
+
+      throw new this._baseError(
+        `${this._baseEntity.getTableName()}.remove.sql_errors`,
       );
     }
   }

@@ -6,13 +6,13 @@ import { IGenericMapper } from '@bomb/core/infrastructure';
 export abstract class BaseAdapter<I, E> implements IBasePort<I> {
   private readonly _repository: IRepository<E>;
 
-  private readonly _mapper: IGenericMapper<any,I, E, any>;
+  private readonly _mapper: IGenericMapper<any, I, E, any>;
 
   private readonly _logger: RestLogger;
 
   constructor(
     repository: IRepository<E>,
-    mapper: IGenericMapper<any,I, E, any>,
+    mapper: IGenericMapper<any, I, E, any>,
     logger: RestLogger,
   ) {
     this._repository = repository;
@@ -56,9 +56,17 @@ export abstract class BaseAdapter<I, E> implements IBasePort<I> {
     try {
       const entity: E = this._mapper.boToEntity(bo);
 
-      const result: E = await this._repository.update(id, entity)
+      const result: E = await this._repository.update(id, entity);
 
       return this._mapper.entityToBo(result);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async remove(id: number): Promise<boolean> {
+    try {
+      return await this._repository.remove(id);
     } catch (e) {
       throw e;
     }

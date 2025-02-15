@@ -8,6 +8,8 @@ import { UserCreateUseCase } from '@modules/user/domain/use-cases/user-create.us
 import { UserCreateUseCaseImpl } from '@modules/user/application/user-create-impl.use-case';
 import { UserUpdateUseCaseImpl } from '@modules/user/application/user-update-impl.use-case';
 import { UserUpdateUseCase } from '@modules/user/domain/use-cases/user-update.use-case';
+import { UserRemoveUseCase } from '@modules/user/domain/use-cases/user-remove.use-case';
+import { UserRemoveUseCaseImpl } from '@modules/user/application/user-remove-impl.use-case';
 
 export const USER_USE_CASES_PROVIDERS: Provider[] = [
   {
@@ -25,5 +27,9 @@ export const USER_USE_CASES_PROVIDERS: Provider[] = [
   {
     provide: UserUpdateUseCase,
     useClass: UserUpdateUseCaseImpl,
+  },
+  {
+    provide: UserRemoveUseCase,
+    useClass: UserRemoveUseCaseImpl,
   },
 ];
